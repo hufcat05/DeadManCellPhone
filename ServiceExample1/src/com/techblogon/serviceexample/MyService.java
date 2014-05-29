@@ -1,0 +1,42 @@
+package com.techblogon.serviceexample;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
+
+public class MyService extends Service{
+
+	private static final String TAG = "MyService";
+	UDPMessenger messenger;
+	
+	public MyService(){
+		messenger = new UDPMessenger(this);
+	}
+
+	@Override
+	public IBinder onBind(Intent arg0) {
+		return null;
+	}
+
+	@Override
+	public void onCreate() {
+		Toast.makeText(this, "Congrats! MyService Created", Toast.LENGTH_LONG).show();
+		Log.d(TAG, "onCreate");
+	}
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		Log.d("yolo", "starting thread");
+		messenger.startMessageReceiver();
+		Log.d(TAG, "onStart");
+	//Note: You can start a new thread and use it for long background processing from here.
+	}
+
+	@Override
+	public void onDestroy() {
+		Toast.makeText(this, "MyService Stopped", Toast.LENGTH_LONG).show();
+		Log.d(TAG, "onDestroy");
+	}
+}
