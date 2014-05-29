@@ -1,0 +1,27 @@
+package test.server.tcp;
+
+
+public class ConnectionThread implements Runnable{
+	IPCServer sendServer;
+	
+	public ConnectionThread(){
+		sendServer = new IPCServer();
+	}
+	
+	@Override
+	public void run() {
+		try {	
+			while (true){
+				Thread.sleep(300);
+				String[] args = {"","off","heartbeat"};
+				System.out.println("sending heartbeat");
+				sendServer.main(args);
+			}
+		} catch (InterruptedException ex){
+			
+		}
+		
+	}
+	
+
+}

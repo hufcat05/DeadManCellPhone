@@ -1,0 +1,16 @@
+package test.server.tcp;
+
+public class RefreshServer implements Runnable{
+	
+	public RefreshServer(){
+	}
+	
+	@Override
+	public void run() {
+		System.gc();
+		Thread thread = new Thread(new TCPServer());
+		thread.start();
+		
+	}
+
+}
