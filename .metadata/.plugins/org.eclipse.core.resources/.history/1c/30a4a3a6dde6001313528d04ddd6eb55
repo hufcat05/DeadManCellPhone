@@ -95,9 +95,12 @@ public class TCPServer extends Thread {
                         messageListener.messageReceived("Cue Server Connnected");
                         String commandMessage = null;
                         System.out.println("checking localin");
-                      
-                    	commandMessage = localIn.readLine();
-                    	System.out.println("localin not ready");
+                        if (localIn.ready()){
+                        	System.out.println("local in ready");
+                        	commandMessage = localIn.readLine();
+                        } else {
+                        	System.out.println("localin not ready");
+                        }
                     	
                     	if (commandMessage != null && messageListener != null){
                     		if (commandMessage.contains("heartbeat")){

@@ -76,6 +76,7 @@ public class MainActivity extends Activity {
 		r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 		
 		deviceAdminSetup();
+		showNotification();
 		
 		Log.d("yolo", "starting service");
 		startService(new Intent(this, MyService.class));
@@ -94,7 +95,29 @@ public class MainActivity extends Activity {
 		return intent.getBooleanExtra("shouldRing", false);
 	}
 	
-	
+	public void showNotification(){
+		// prepare intent which is triggered if the
+		// notification is selected
+
+		Intent intent = new Intent(this, MainActivity.class);
+		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+		// build notification
+		// the addAction re-use the same intent to keep the example short
+		Notification n  = new Notification.Builder(this)
+		.setTicker("Listener Running")
+		.setContentTitle("Listening")
+		.setContentText("Hello")
+		.setSmallIcon(R.drawable.ic_launcher)
+		.setContentIntent(pIntent).getNotification();
+		n.flags = Notification.FLAG_ONGOING_EVENT;
+		    
+		  
+		NotificationManager notificationManager = 
+		  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		notificationManager.notify(0, n); 
+	}
 	
 	@Override
 	 protected void onActivityResult(int requestCode, int resultCode, Intent data) {

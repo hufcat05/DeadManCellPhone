@@ -61,7 +61,7 @@ public class MyService extends IntentService{
         }, this);
         Thread thread = new Thread(mTcpClient);
         thread.start();
-
+        showNotification();
 		Log.d(TAG, "onStart");
 	//Note: You can start a new thread and use it for long background processing from here.
 	}

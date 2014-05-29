@@ -81,7 +81,7 @@ public class TCPClient implements Runnable{
 	                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	                        connected = true;
                 		}
-                		if (in != null){
+                		if (in != null && in.ready()){
                 			serverMessage = in.readLine();
                 		}
 	 

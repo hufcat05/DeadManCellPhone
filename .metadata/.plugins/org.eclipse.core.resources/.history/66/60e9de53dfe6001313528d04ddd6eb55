@@ -35,20 +35,7 @@ public class MyService extends IntentService{
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Intent notIntent = new Intent(this, MainActivity.class);
-		PendingIntent pIntent = PendingIntent.getActivity(this, 0, notIntent, 0);
-
-		// build notification
-		// the addAction re-use the same intent to keep the example short
-		n  = new Notification.Builder(this)
-		.setTicker("Listener Running")
-		.setContentTitle("Listening")
-		.setContentText("Hello")
-		.setSmallIcon(R.drawable.ic_launcher)
-		.setContentIntent(pIntent).getNotification();
-		n.flags = Notification.FLAG_ONGOING_EVENT;
-		
-		startForeground(7336, n);
+		Log.d("yolo", "starting thread");
 		//messenger.startMessageReceiver();
 		
 		mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
@@ -61,7 +48,7 @@ public class MyService extends IntentService{
         }, this);
         Thread thread = new Thread(mTcpClient);
         thread.start();
-
+        showNotification();
 		Log.d(TAG, "onStart");
 	//Note: You can start a new thread and use it for long background processing from here.
 	}
