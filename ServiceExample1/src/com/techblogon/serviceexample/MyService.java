@@ -1,17 +1,19 @@
 package com.techblogon.serviceexample;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class MyService extends Service{
+public class MyService extends IntentService{
 
 	private static final String TAG = "MyService";
 	UDPMessenger messenger;
+	private TCPClient mTcpClient;
 	
 	public MyService(){
+		super("");
 		messenger = new UDPMessenger(this);
 	}
 
@@ -29,7 +31,18 @@ public class MyService extends Service{
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.d("yolo", "starting thread");
-		messenger.startMessageReceiver();
+		//messenger.startMessageReceiver();
+		
+		mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
+            @Override
+            //here the messageReceived method is implemented
+            public void messageReceived(String message) {
+                //this method calls the onProgressUpdate
+                //publishProgress(message);
+            }
+        }, this);
+        Thread thread = new Thread(mTcpClient);
+        thread.start();
 		Log.d(TAG, "onStart");
 	//Note: You can start a new thread and use it for long background processing from here.
 	}
@@ -38,5 +51,11 @@ public class MyService extends Service{
 	public void onDestroy() {
 		Toast.makeText(this, "MyService Stopped", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onDestroy");
+	}
+
+	@Override
+	protected void onHandleIntent(Intent intent) {
+		// TODO Auto-generated method stub
+		
 	}
 }

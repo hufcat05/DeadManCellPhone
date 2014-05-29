@@ -27,6 +27,7 @@ public class ServerBoard extends JFrame {
         messagesArea.setColumns(30);
         messagesArea.setRows(10);
         messagesArea.setEditable(false);
+        messagesArea.setAutoscrolls(true);
  
         sendButton = new JButton("Send");
         sendButton.addActionListener(new ActionListener() {

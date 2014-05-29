@@ -16,7 +16,7 @@ import javax.swing.JFrame;
  */
 public class TCPServer extends Thread {
  
-    public static final int SERVERPORT = 4445;
+    public static final int SERVERPORT = 4444;
     private boolean running = false;
     private PrintWriter mOut;
     private OnMessageReceived messageListener;
@@ -84,29 +84,37 @@ public class TCPServer extends Thread {
                 //in this while we wait to receive messages from client (it's an infinite loop)
                 //this while it's like a listener for messages
                 while (running) {
-                	
                 	//*****************************************************
                 	// This block listens for commands from the local .jar file launched by Cue Labs 
                 	
                 	try {
+                		
                 		Socket skt = new Socket("localhost", 1234);
+                		
                         BufferedReader localIn = new BufferedReader(new InputStreamReader(skt.getInputStream()));
                         messageListener.messageReceived("Cue Server Connnected");
-                        
-                        String message = localIn.readLine();
+                        String commandMessage = null;
+                        System.out.println("checking localin");
+                        if (localIn.ready()){
+                        	System.out.println("local in ready");
+                        	commandMessage = localIn.readLine();
+                        } else {
+                        	System.out.println("localin not ready");
+                        }
                     	
-                    	if (message != null && messageListener != null){
-                    		if (message.contains("heartbeat")){
+                    	if (commandMessage != null && messageListener != null){
+                    		if (commandMessage.contains("heartbeat")){
                     			if (!heartBeatReceived){
                     				counter++;
                     			}
                     			heartBeatReceived = false;
                     			sendMessage("heartbeat");
                     		} else {
-                    			messageListener.messageReceived("Sending Message: " + message);
-                    			sendMessage(message);
+                    			messageListener.messageReceived("Sending Message: " + commandMessage);
+                    			sendMessage(commandMessage);
                     		}
                     		skt.close();
+                    		localIn.close();
                     	}
                 	} catch (ConnectException ex){
                 		
@@ -116,9 +124,11 @@ public class TCPServer extends Thread {
                 	
                 	//*********************************************************
                 	//This block listens for responses from the device
-                	
-                    String message = in.readLine();
- 
+                	String message = null;
+                	if (in.ready()){
+                		message = in.readLine();
+                	}
+                  
                     if (message != null && messageListener != null) {
                         //call the method messageReceived from ServerBoard class
                     	if (!heartBeatReceived){
@@ -143,14 +153,14 @@ public class TCPServer extends Thread {
                 messageListener.messageReceived("Error: " + e.getMessage());
             } finally {
                client.close();
+               mOut.close();
                messageListener.messageReceived("Connection Closed. Goodnight");
             }
  
         } catch (Exception e) {
            messageListener.messageReceived("Error: " + e.getMessage());
         }
-        //If the while loop is broken for any reason, restart the server
-        this.start();
+       
     }
     
  

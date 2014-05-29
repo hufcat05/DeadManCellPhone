@@ -188,7 +188,11 @@ public class MainActivity extends Activity {
 
 		//} else {
 		// Already is a device administrator, can do security operations now.
-		screenWakeLock.release();
+		try {
+			screenWakeLock.release();
+		} catch (Exception e){
+			
+		}
 		mDPM.lockNow();
 		//}
 	}
