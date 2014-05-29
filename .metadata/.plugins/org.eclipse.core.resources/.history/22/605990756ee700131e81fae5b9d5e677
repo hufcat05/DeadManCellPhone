@@ -1,0 +1,46 @@
+package com.techblogon.serviceexample;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import android.util.Log;
+
+
+public class TestThread implements Runnable{
+	public static final String SERVERIP = "localhost"; //your computer IP address
+    public static final int SERVERPORT = 4444;
+	
+	
+	public TestThread(){
+
+	}
+
+	@Override
+	public void run() {
+		try {
+			InetAddress serverAddr = InetAddress.getByName(SERVERIP);
+			
+			Socket socket = null;
+			
+			try {
+				
+			} catch (ConnectException ex){
+				//create a socket to make the connection with the server
+                socket = new Socket(serverAddr, SERVERPORT);
+               
+                //receive the message which the server sends back
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			}
+		} catch (UnknownHostException e){
+			Log.e("yolo", "Exception", e);
+		}
+	}
+	
+}

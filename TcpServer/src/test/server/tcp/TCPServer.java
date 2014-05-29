@@ -72,7 +72,7 @@ public class TCPServer extends Thread {
             //starting heartbeat
             Thread heartBeatThread = new Thread(new ConnectionThread());
             heartBeatThread.start();
- 
+            
             try {
  
                 //sends the message to the client
@@ -129,8 +129,9 @@ public class TCPServer extends Thread {
                     if (message != null && messageListener != null) {
                         //call the method messageReceived from ServerBoard class
                     	if (!heartBeatReceived){
-                    		if (message.contains("response")){
+                    		if (message.contains("heartbeat")){
                     			heartBeatReceived = true;
+                    			counter = 0;
                     		}
                     	}
                         messageListener.messageReceived("Phone: " + message);
@@ -140,7 +141,7 @@ public class TCPServer extends Thread {
                     //***********************************************************
                     //This alerts if the counter has increased to 3 meaning the device hasn't responded in 90 seconds
                     //setting running = false breaks the while loop and restarts the server
-                    if (counter == 3){
+                    if (counter == 2){
                     	deviceDisconnectAlert();
                     	running = false;
                     }
@@ -157,7 +158,7 @@ public class TCPServer extends Thread {
         } catch (Exception e) {
            messageListener.messageReceived("Error: " + e.getMessage());
         }
-       
+       run();
     }
     
  

@@ -12,12 +12,12 @@ public class ConnectionThread implements Runnable{
 	public void run() {
 		try {	
 			while (true){
-				Thread.sleep(30000);
+				Thread.sleep(10000);
 				String[] args = {"","off","heartbeat"};
 				System.out.println("sending heartbeat");
-				//if (!sendServer.sendMessage(args)){
-				//	break;
-				//}
+				if (!sendServer.sendMessage(args)){
+					break;
+				}
 			}
 		} catch (InterruptedException ex){
 			

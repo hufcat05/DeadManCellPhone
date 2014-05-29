@@ -1,0 +1,17 @@
+package com.techblogon.serviceexample;
+
+import android.util.Log;
+import android.widget.Toast;
+
+public class TestThread implements Runnable{
+	
+	public TestThread(){
+
+	}
+
+	@Override
+	public void run() {
+		
+	}
+	
+}

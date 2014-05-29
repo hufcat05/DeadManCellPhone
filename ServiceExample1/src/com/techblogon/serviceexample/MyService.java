@@ -1,15 +1,15 @@
 package com.techblogon.serviceexample;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class MyService extends IntentService{
+public class MyService extends Service{
 
 	private static final String TAG = "MyService";
 	UDPMessenger messenger;
@@ -18,7 +18,6 @@ public class MyService extends IntentService{
 	NotificationManager notificationManager;
 	
 	public MyService(){
-		super("");
 		messenger = new UDPMessenger(this);
 	}
 
@@ -53,7 +52,7 @@ public class MyService extends IntentService{
 		
 		mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
             @Override
-            //here the messageReceived method is implemented
+            //More nonsense code
             public void messageReceived(String message) {
                 //this method calls the onProgressUpdate
                 //publishProgress(message);
@@ -99,9 +98,5 @@ public class MyService extends IntentService{
 		Log.d(TAG, "onDestroy");
 	}
 
-	@Override
-	protected void onHandleIntent(Intent intent) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

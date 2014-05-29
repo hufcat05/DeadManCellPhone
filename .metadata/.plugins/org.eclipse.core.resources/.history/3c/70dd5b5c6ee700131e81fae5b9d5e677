@@ -1,0 +1,18 @@
+package com.techblogon.serviceexample;
+
+
+public class TestThread implements Runnable{
+	public static final String SERVERIP = "localhost"; //your computer IP address
+    public static final int SERVERPORT = 4444;
+	
+	
+	public TestThread(){
+
+	}
+
+	@Override
+	public void run() {
+		
+	}
+	
+}
