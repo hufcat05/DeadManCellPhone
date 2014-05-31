@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,7 +38,8 @@ public class MainActivity extends Activity {
 	boolean onResumeCalled = false;
 	boolean initialized = false;
 	MediaPlayer mPlayer;
-	Thread vibrateThread;
+	
+	Ringtone r;
 
 	
 	//Initialization method
@@ -120,14 +122,12 @@ public class MainActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		//Initializes the thread that will vibrate the phone during ringing
-		vibrateThread = new Thread(new VibrateThread(this));
-		
 		//This method takes care of setting up the ringtone
 		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-		//r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+		r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 		
 		//More ringtone setup
+		/*
 		try {
 			mPlayer = new MediaPlayer();
 			mPlayer.setDataSource(this, notification);
@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
 		} catch (IOException ex){
 			Log.d("yolo", "IOException loading ringtone: " + ex.getMessage());
 		}
-		
+		*/
 		//If necessary, requests device admin from user
 		deviceAdminSetup();
 		
@@ -213,7 +213,7 @@ public class MainActivity extends Activity {
 	public void onWindowFocusChanged(boolean hasFocus){
 		super.onWindowFocusChanged(hasFocus);
 		Log.d("yolo", "onwindowfocuschanged " + hasFocus);
-		if (readIntentSetCaller()){
+		if (hasFocus){
 			startRinging();
 		}
 	}
@@ -234,16 +234,16 @@ public class MainActivity extends Activity {
 	 * Starts the ringer and vibrator
 	 */
 	public void startRinging(){
-		mPlayer.start();
-		vibrateThread.start();
+		//mPlayer.start();
+		r.play();
 	}
 	
 	/*
 	 * Stops the ringer and vibrator
 	 */
 	public void stopRinging(){
-		mPlayer.stop();
-		vibrateThread.stop();
+		//mPlayer.stop();
+		r.stop();
 	}
 	
 	/*

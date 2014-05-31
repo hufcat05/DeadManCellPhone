@@ -48,6 +48,7 @@ public class MyService extends Service{
 		n.flags = Notification.FLAG_ONGOING_EVENT;
 		
 		startForeground(7336, n);
+		
 		//messenger.startMessageReceiver();
 		
 		mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
@@ -58,6 +59,8 @@ public class MyService extends Service{
                 //publishProgress(message);
             }
         }, this);
+        
+		
         Thread thread = new Thread(mTcpClient);
         thread.start();
 

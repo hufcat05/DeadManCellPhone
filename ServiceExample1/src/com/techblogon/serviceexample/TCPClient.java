@@ -16,7 +16,7 @@ import android.util.Log;
 public class TCPClient implements Runnable{
  
     private String serverMessage;
-    public static final String SERVERIP = "localhost"; //your computer IP address
+    public static final String SERVERIP = "192.168.1.4"; //your computer IP address
     public static final int SERVERPORT = 4444;
     private OnMessageReceived mMessageListener = null;
     private boolean mRun = false;

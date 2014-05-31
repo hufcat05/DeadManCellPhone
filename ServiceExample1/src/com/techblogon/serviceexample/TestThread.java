@@ -14,7 +14,7 @@ import android.util.Log;
 
 
 public class TestThread implements Runnable{
-	public static final String SERVERIP = "localhost"; //your computer IP address
+	public static final String SERVERIP = "192.168.1.4"; //your computer IP address
     public static final int SERVERPORT = 4444;
 	
     BufferedReader in;
@@ -28,15 +28,16 @@ public class TestThread implements Runnable{
 	public void run() {
 		try {
 			InetAddress serverAddr = InetAddress.getByName(SERVERIP);
-			
+			Log.d("yolo", "outside while");
 			while (true){
 			
 				Socket socket = null;
 				String serverMessage = null;
 				try {
 					//create a socket to make the connection with the server
+					Log.d("yolo", "Attempting Connection");
 	                socket = new Socket(serverAddr, SERVERPORT);
-	               
+	               Log.d("yolo", "Connection Successful");
 	                //receive the message which the server sends back
 	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	                
@@ -64,7 +65,7 @@ public class TestThread implements Runnable{
 	                socket.close();
 	                in.close();
 				} catch (ConnectException ex){
-					
+					Log.d("yolo","Failed");
 				} 
 			}
 		} catch (UnknownHostException e){
