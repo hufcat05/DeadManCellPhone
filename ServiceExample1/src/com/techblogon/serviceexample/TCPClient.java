@@ -80,6 +80,7 @@ public class TCPClient implements Runnable{
                 		}
 	 
 	                    if (serverMessage != null && mMessageListener != null) {
+	                    	Log.d("yolo", "Message received");
 	                        //call the method messageReceived from MyActivity class
 	                    	if (serverMessage.contains("heartbeat")){
 	                    		sendMessage("heartbeat");
@@ -88,6 +89,7 @@ public class TCPClient implements Runnable{
 		    					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		    					
 	                    		if (serverMessage.contains("off")){
+	                    			Log.d("yolo", "stopping");
 	                    			intent.putExtra("name", "stop");
 	                    			intent.putExtra("shouldRing", false);
 	                    		} else {

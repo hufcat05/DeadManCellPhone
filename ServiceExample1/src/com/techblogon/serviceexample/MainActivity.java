@@ -59,6 +59,7 @@ public class MainActivity extends Activity {
 		}
 		
 		//Reads incoming intent
+		Log.d("yolo", "Reading intent");
 		boolean shouldRing = readIntentSetCaller();
 		
 		//chronometer = (Chronometer) findViewById(R.id.chronometer1);
@@ -80,6 +81,7 @@ public class MainActivity extends Activity {
 	        public boolean onTouch(View v, MotionEvent event) {
 	            if(event.getAction() == (MotionEvent.ACTION_UP)){
 	                ((ImageButton)v).setImageResource(R.drawable.phone3);
+	                takeCallClickListener(v);
 	            }
 	            else{
 	            	 ((ImageButton)v).setImageResource(R.drawable.phone2pressed);
@@ -94,6 +96,7 @@ public class MainActivity extends Activity {
 	        public boolean onTouch(View v, MotionEvent event) {
 	            if(event.getAction() == (MotionEvent.ACTION_UP)){
 	                ((ImageButton)v).setImageResource(R.drawable.hangup);
+	                endCallClickListener(v);
 	            }
 	            else{
 	            	 ((ImageButton)v).setImageResource(R.drawable.iconphonepressed);
@@ -149,6 +152,32 @@ public class MainActivity extends Activity {
 		Log.d("yolo", "service started... starting ringer");
 	}
 	
+	@Override
+	public void onNewIntent(Intent intent){
+		super.onNewIntent(intent);
+		Log.d("yolo","OnNewIntent called");
+		//Acquires a lock that bypasses HTC's lock screen. This way when the app receives a signal it displays the call screen and not the lock screen
+				KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
+				KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+				lock.disableKeyguard();
+				screenWakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(
+					     PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+				//Wakes up the screen and bypasses lock screen
+				screenWakeLock.acquire();
+				
+				//Ensures that the app is full screen so that the notification bar cannot be viewed
+				getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				
+				boolean shouldRing = readIntentSetCaller(intent);
+				Log.d("yolo", "shouldRing: " + shouldRing);
+				
+				if (shouldRing){
+					startRinging();
+				}				
+	}
+	
 	/*
 	 * Reads the incoming intent for the name of the caller, determines if the phone should start ringing
 	 */
@@ -156,17 +185,44 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		
 		String name = intent.getStringExtra("name");
+		Log.d("yolo", "Name: " + name);
 		if (name != null && name.length() != 0){
 			if (name.contains("stop")){
+				Log.d("yolo", "contained stop");
 				stopRinging();
+				lockScreen();
 				return false;
 			} else {
 				TextView caller = (TextView) findViewById(R.id.textView1);
 				caller.setText(name);
+				return true;
 			}
+		} else {
+			return false;
 		}
+	}
+	
+	/*
+	 * Reads the incoming intent for the name of the caller, determines if the phone should start ringing
+	 */
+	public boolean readIntentSetCaller(Intent intent){
 		
-		return intent.getBooleanExtra("shouldRing", false);
+		String name = intent.getStringExtra("name");
+		Log.d("yolo", "Name: " + name);
+		if (name != null && name.length() != 0){
+			if (name.contains("stop")){
+				Log.d("yolo", "contained stop");
+				stopRinging();
+				lockScreen();
+				return false;
+			} else {
+				TextView caller = (TextView) findViewById(R.id.textView1);
+				caller.setText(name);
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	
@@ -212,9 +268,16 @@ public class MainActivity extends Activity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus){
 		super.onWindowFocusChanged(hasFocus);
+		boolean shouldRing = readIntentSetCaller();
+		Log.d("yolo", "shouldRing: " + shouldRing);
 		Log.d("yolo", "onwindowfocuschanged " + hasFocus);
 		if (hasFocus){
-			startRinging();
+			if (!r.isPlaying()){
+				startRinging();
+			} else { 
+				stopRinging();
+				lockScreen();
+			}
 		}
 	}
 	

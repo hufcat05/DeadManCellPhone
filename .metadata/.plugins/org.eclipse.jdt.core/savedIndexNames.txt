@@ -14,7 +14,6 @@ INDEX VERSION 1.126+C:\Users\hufcat05\AppWorkspace\DeadManCellPhone\.metadata\.p
 1075156909.index
 683184654.index
 2706502329.index
-823335130.index
 728132027.index
 4267005613.index
 1284074322.index

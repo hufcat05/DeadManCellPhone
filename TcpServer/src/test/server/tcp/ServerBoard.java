@@ -11,6 +11,8 @@ public class ServerBoard extends JFrame {
     private JTextField message;
     private JButton startServer;
     private TCPServer mServer;
+    
+    int counter = 0;
  
     public ServerBoard() {
  
@@ -33,6 +35,10 @@ public class ServerBoard extends JFrame {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	counter++;
+            	if (counter > 15){
+            		messagesArea.setText("");
+            	}
                 // get the message from the text view
                 String messageText = message.getText();
                 // add message to the message area
