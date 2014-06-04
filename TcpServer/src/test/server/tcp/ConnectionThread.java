@@ -13,7 +13,7 @@ public class ConnectionThread implements Runnable{
 		try {	
 			while (true){
 				Thread.sleep(10000);
-				String[] args = {"","off","heartbeat"};
+				//String[] args = {"","off","heartbeat"};
 				//System.out.println("sending heartbeat");
 				//if (!sendServer.sendMessage(args)){
 				//	break;

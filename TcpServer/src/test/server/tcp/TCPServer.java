@@ -2,6 +2,7 @@ package test.server.tcp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class TCPServer extends Thread {
     private boolean running = false;
     private PrintWriter mOut;
     private OnMessageReceived messageListener;
-    private Socket client;
+    private static Socket client;
     private boolean heartBeatReceived = true;
     int counter = 0;
  
@@ -31,7 +32,19 @@ public class TCPServer extends Thread {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
- 
+        
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+            	try {
+            		client.close();
+            	} catch (IOException ex){
+            		
+            	}
+            }
+        });
     }
  
     /**

@@ -7,4 +7,5 @@
 <fullyQualifiedTypeName name="com.techblogon.serviceexample.R"/>
 <fullyQualifiedTypeName name="com.techblogon.serviceexample.R.drawable"/>
 <fullyQualifiedTypeName name="android.util.Log"/>
+<fullyQualifiedTypeName name="android.media.RingtoneManager"/>
 </qualifiedTypeNameHistroy>

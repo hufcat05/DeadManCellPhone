@@ -1,7 +1,5 @@
 package com.techblogon.serviceexample;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
@@ -10,7 +8,6 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -38,6 +35,7 @@ public class MainActivity extends Activity {
 	boolean onResumeCalled = false;
 	boolean initialized = false;
 	MediaPlayer mPlayer;
+	RingThread ringThread;
 	
 	Ringtone r;
 
@@ -60,12 +58,12 @@ public class MainActivity extends Activity {
 		
 		//Reads incoming intent
 		Log.d("yolo", "Reading intent");
-		boolean shouldRing = readIntentSetCaller();
+		//boolean shouldRing = readIntentSetCaller();
 		
 		//chronometer = (Chronometer) findViewById(R.id.chronometer1);
-		if (shouldRing){
-			startRinging();
-		}
+		//if (shouldRing){
+			//startRinging();
+		//}
 	}
 	
 	/**
@@ -128,7 +126,6 @@ public class MainActivity extends Activity {
 		//This method takes care of setting up the ringtone
 		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
 		r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-		
 		//More ringtone setup
 		/*
 		try {
@@ -137,7 +134,7 @@ public class MainActivity extends Activity {
 			final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			mPlayer.setAudioStreamType(AudioManager.STREAM_RING);
 			mPlayer.setLooping(true);
-			mPlayer.prepare();
+			mPlayer.prepareAsync();
 			
 		} catch (IOException ex){
 			Log.d("yolo", "IOException loading ringtone: " + ex.getMessage());
@@ -157,25 +154,37 @@ public class MainActivity extends Activity {
 		super.onNewIntent(intent);
 		Log.d("yolo","OnNewIntent called");
 		//Acquires a lock that bypasses HTC's lock screen. This way when the app receives a signal it displays the call screen and not the lock screen
-				KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
-				KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
-				lock.disableKeyguard();
-				screenWakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(
-					     PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-				//Wakes up the screen and bypasses lock screen
-				screenWakeLock.acquire();
-				
-				//Ensures that the app is full screen so that the notification bar cannot be viewed
-				getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-				
-				boolean shouldRing = readIntentSetCaller(intent);
-				Log.d("yolo", "shouldRing: " + shouldRing);
-				
-				if (shouldRing){
-					startRinging();
-				}				
+		KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
+		KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+		lock.disableKeyguard();
+		screenWakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(
+			     PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+		//Wakes up the screen and bypasses lock screen
+		screenWakeLock.acquire();
+		
+		//Ensures that the app is full screen so that the notification bar cannot be viewed
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
+		boolean shouldRing = readIntentSetCaller(intent);
+		Log.d("yolo", "shouldRing: " + shouldRing);
+		
+		//***********************************************
+		//Delete this section if phone rings by itself
+		String name = intent.getStringExtra("name");
+		
+		if (name != null && name.contains("stop")){
+			shouldRing = false;
+		} else {
+			shouldRing = true;
+		}
+		//************************************************
+		if (shouldRing){
+			startRinging();
+		}
+		
+		intent.removeExtra("name");
 	}
 	
 	/*
@@ -265,13 +274,18 @@ public class MainActivity extends Activity {
 	 * (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
 	 */
+	/*
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus){
 		super.onWindowFocusChanged(hasFocus);
+		
+		PowerManager pm = (PowerManager)
+				getSystemService(Context.POWER_SERVICE);
+				boolean isScreenOn = pm.isScreenOn();
 		boolean shouldRing = readIntentSetCaller();
 		Log.d("yolo", "shouldRing: " + shouldRing);
 		Log.d("yolo", "onwindowfocuschanged " + hasFocus);
-		if (hasFocus){
+		if (hasFocus && isScreenOn){
 			if (!r.isPlaying()){
 				startRinging();
 			} else { 
@@ -280,7 +294,7 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+	*/
 	/*
 	 * More nonsense code
 	 * (non-Javadoc)
@@ -297,18 +311,19 @@ public class MainActivity extends Activity {
 	 * Starts the ringer and vibrator
 	 */
 	public void startRinging(){
-		//mPlayer.start();
-		r.play();
+		ringThread = new RingThread(r);
+		ringThread.start();
 	}
 	
 	/*
 	 * Stops the ringer and vibrator
 	 */
 	public void stopRinging(){
-		//mPlayer.stop();
-		r.stop();
+		if (ringThread != null){
+			ringThread.setRing(false);
+		}
 	}
-	
+	//new comment
 	/*
 	 * Method that is called when the hangup button is pressed.
 	 * Stops ringing and locks the screen

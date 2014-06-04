@@ -16,7 +16,8 @@ import android.util.Log;
 public class TCPClient implements Runnable{
  
     private String serverMessage;
-    public static final String SERVERIP = "192.168.1.4"; //your computer IP address
+    public static final String SERVERIP = "172.16.40.22"; //your computer IP address
+    //public static final String SERVERIP = "192.168.1.4";
     public static final int SERVERPORT = 4444;
     private OnMessageReceived mMessageListener = null;
     private boolean mRun = false;
@@ -95,7 +96,7 @@ public class TCPClient implements Runnable{
 	                    		} else {
 			                    	String[] messageInfo = serverMessage.split(":");
 			    					String name = messageInfo[messageInfo.length - 1];
-			    					
+			    					name = name.replaceAll("-", " ");
 			    					Log.d("yolo", "Message Received");
 			    					intent.putExtra("name", name);
 			    					intent.putExtra("shouldRing", true);

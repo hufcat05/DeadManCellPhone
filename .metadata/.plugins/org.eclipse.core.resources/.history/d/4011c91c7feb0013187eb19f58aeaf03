@@ -1,0 +1,35 @@
+package com.techblogon.serviceexample;
+
+import android.media.Ringtone;
+
+public class RingThread extends Thread{
+
+	boolean ring = true;
+	Ringtone r;
+	
+	public RingThread(Ringtone r){
+		this.r = r;
+	}
+	
+	@Override
+	public void run(){
+		super.run();
+		
+		while (ring){
+			r.play();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex){
+				
+			}
+		}
+	}
+	
+	public void setRing(boolean ring){
+		this.ring = ring;
+		
+		if (!ring){
+			r.stop();
+		}
+	}
+}
