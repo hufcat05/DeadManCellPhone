@@ -33,10 +33,14 @@ public class IPCServer {
 	         out.close();
 	         skt.close();
 	         srvr.close();
+	         out = null;
+	         skt = null;
+	         srvr = null;
 	      } catch (SocketTimeoutException e){
 	    	  JOptionPane.showMessageDialog(null, "The message server has shut down unexpectedly, please revert to backup cue. When you have time, please restart the message server.");
 	      }
 	      catch(Exception e) {
+	    	  e.printStackTrace();
 	         JOptionPane.showMessageDialog(null, "There was an error sending the message. Please revert to backup cue");
 	      }
 	}
@@ -66,6 +70,9 @@ public class IPCServer {
 	         out.close();
 	         skt.close();
 	         srvr.close();
+	         out = null;
+	         skt = null;
+	         srvr = null;
 	      } catch (SocketTimeoutException e){
 	    	  JOptionPane.showMessageDialog(null, "The message server has shut down unexpectedly, please revert to backup cue. When you have time, please restart the message server.");
 	    	  return false;

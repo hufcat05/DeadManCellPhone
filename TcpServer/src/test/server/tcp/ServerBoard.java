@@ -38,6 +38,7 @@ public class ServerBoard extends JFrame {
             	counter++;
             	if (counter > 15){
             		messagesArea.setText("");
+            		counter = 0;
             	}
                 // get the message from the text view
                 String messageText = message.getText();
@@ -57,6 +58,7 @@ public class ServerBoard extends JFrame {
                 // disable the start button
                 startServer.setEnabled(false);
                 
+                
                 //creates the object OnMessageReceived asked by the TCPServer constructor
                 mServer = new TCPServer(new TCPServer.OnMessageReceived() {
                     @Override
@@ -64,11 +66,16 @@ public class ServerBoard extends JFrame {
                     //this method is actually a callback method, because it will run every time when it will be called from
                     //TCPServer class (at while)
                     public void messageReceived(String message) {
+                    	counter++;
+                    	if (counter > 15){
+                    		messagesArea.setText("");
+                    		counter = 0;
+                    	}
                         messagesArea.append("\n "+message);
                     }
                 });
                 mServer.start();
- 
+ 				
             }
         });
  
@@ -91,4 +98,5 @@ public class ServerBoard extends JFrame {
         setSize(300, 170);
         setVisible(true);
     }
+    
 }

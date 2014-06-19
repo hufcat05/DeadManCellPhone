@@ -23,12 +23,13 @@ public class TCPServer extends Thread {
     private OnMessageReceived messageListener;
     private static Socket client;
     private boolean heartBeatReceived = true;
+    static ServerBoard frame;
     int counter = 0;
  
     public static void main(String[] args) {
  
         //opens the window where the messages will be received and sent
-        ServerBoard frame = new ServerBoard();
+        frame = new ServerBoard();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
@@ -61,6 +62,12 @@ public class TCPServer extends Thread {
      */
     public void sendMessage(String message){
         if (mOut != null && !mOut.checkError()) {
+        	if (message.contains("heartbeat")){
+    			if (!heartBeatReceived){
+    				counter++;
+    			}
+    			heartBeatReceived = false;
+    		}
             mOut.println(message);
             mOut.flush();
         }
@@ -68,110 +75,114 @@ public class TCPServer extends Thread {
  
     @Override
     public void run() {
+    	System.out.println("In run");
         super.run();
- 
-        running = true;
- 
-        try {
-            messageListener.messageReceived("Waiting for device connection...");
-
-            //create a server socket. A server socket waits for requests to come in over the network.
-            ServerSocket serverSocket = new ServerSocket(SERVERPORT);
- 
-            //create client socket... the method accept() listens for a connection to be made to this socket and accepts it.
-            Socket client = serverSocket.accept();
-            messageListener.messageReceived("Device connection established. Listening on port: " + SERVERPORT + "...");
-            
-            //starting heartbeat
-            Thread heartBeatThread = new Thread(new ConnectionThread());
-            heartBeatThread.start();
-            
-            try {
- 
-                //sends the message to the client
-                mOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
- 
-                //read the message received from client
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
- 
-                //in this while we wait to receive messages from client (it's an infinite loop)
-                //this while it's like a listener for messages
-                while (running) {
-                	//*****************************************************
-                	// This block listens for commands from the local .jar file launched by Cue Labs 
-                	
-                	try {
-                		
-                		Socket skt = new Socket("localhost", 1234);
-                		
-                        BufferedReader localIn = new BufferedReader(new InputStreamReader(skt.getInputStream()));
-                        messageListener.messageReceived("Cue Server Connnected");
-                        String commandMessage = null;
-                        System.out.println("checking localin");
-                      
-                    	commandMessage = localIn.readLine();
-                    	System.out.println("localin not ready");
-                    	
-                    	if (commandMessage != null && messageListener != null){
-                    		if (commandMessage.contains("heartbeat")){
-                    			if (!heartBeatReceived){
-                    				counter++;
-                    			}
-                    			heartBeatReceived = false;
-                    			sendMessage("heartbeat");
-                    		} else {
-                    			messageListener.messageReceived("Sending Message: " + commandMessage);
-                    			sendMessage(commandMessage);
-                    		}
-                    		skt.close();
-                    		localIn.close();
-                    	}
-                	} catch (ConnectException ex){
-                		
-                	}
-                	
-                	//*********************************************************
-                	
-                	//*********************************************************
-                	//This block listens for responses from the device
-                	String message = null;
-                	if (in.ready()){
-                		message = in.readLine();
-                	}
-                  
-                    if (message != null && messageListener != null) {
-                        //call the method messageReceived from ServerBoard class
-                    	if (!heartBeatReceived){
-                    		if (message.contains("heartbeat")){
-                    			heartBeatReceived = true;
-                    			counter = 0;
-                    		}
-                    	}
-                        messageListener.messageReceived("Phone: " + message);
-                    } 
-                    
-                    
-                    //***********************************************************
-                    //This alerts if the counter has increased to 3 meaning the device hasn't responded in 90 seconds
-                    //setting running = false breaks the while loop and restarts the server
-                    if (counter == 2){
-                    	deviceDisconnectAlert();
-                    	running = false;
-                    }
-                }
- 
-            } catch (Exception e) {
-                messageListener.messageReceived("Error: " + e.getMessage());
-            } finally {
-               client.close();
-               mOut.close();
-               messageListener.messageReceived("Connection Closed. Goodnight");
-            }
- 
-        } catch (Exception e) {
-           messageListener.messageReceived("Error: " + e.getMessage());
+        while (true){
+	        running = true;
+	        heartBeatReceived = true;
+	        counter = 0;
+	 
+	        try {
+	            messageListener.messageReceived("Waiting for device connection...");
+	
+	            //create a server socket. A server socket waits for requests to come in over the network.
+	            ServerSocket serverSocket = new ServerSocket(SERVERPORT);
+	            
+	            //create client socket... the method accept() listens for a connection to be made to this socket and accepts it.
+	            Socket client = serverSocket.accept();
+	            messageListener.messageReceived("Device connection established. Listening on port: " + SERVERPORT + "...");
+	            
+	            //starting heartbeat
+	            Thread heartBeatThread = new Thread(new ConnectionThread(this));
+	            heartBeatThread.start();
+	            
+	            try {
+	 
+	                //sends the message to the client
+	                mOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
+	 
+	                //read the message received from client
+	                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+	 
+	                //in this while we wait to receive messages from client (it's an infinite loop)
+	                //this while it's like a listener for messages
+	                while (running) {
+	                	//*****************************************************
+	                	// This block listens for commands from the local .jar file launched by Cue Labs 
+	                	
+	                	try {
+	                		
+	                		Socket skt = new Socket("localhost", 1234);
+	                		
+	                        BufferedReader localIn = new BufferedReader(new InputStreamReader(skt.getInputStream()));
+	                        messageListener.messageReceived("Cue Server Connnected");
+	                        String commandMessage = null;
+	                        //System.out.println("checking localin");
+	                      
+	                       
+	                        commandMessage = localIn.readLine();
+	                       
+	                    	
+	                    	if (commandMessage != null && messageListener != null){
+	              
+	                			messageListener.messageReceived("Sending Message: " + commandMessage);
+	                			sendMessage(commandMessage);
+	                    
+	                    		skt.close();
+	                    		localIn.close();
+	                    	}
+	                	} catch (ConnectException ex){
+	                		
+	                	}
+	                	
+	                	//*********************************************************
+	                	
+	                	//*********************************************************
+	                	//This block listens for responses from the device
+	                	String message = null;
+	                	if (in.ready()){
+	                		message = in.readLine();
+	                	}
+	                  
+	                    if (message != null && messageListener != null) {
+	                        //call the method messageReceived from ServerBoard class
+	                    	if (!heartBeatReceived){
+	                    		if (message.contains("heartbeat")){
+	                    			heartBeatReceived = true;
+	                    			counter = 0;
+	                    		}
+	                    	}
+	                        messageListener.messageReceived("Phone: " + message);
+	                    } 
+	                    
+	                    
+	                    //***********************************************************
+	                    //This alerts if the counter has increased to 3 meaning the device hasn't responded in 90 seconds
+	                    //setting running = false breaks the while loop and restarts the server
+	                    if (counter == 1){
+	                    	deviceDisconnectAlert();
+	                    	running = false;
+	                    }
+	                }
+	 
+	            } catch (Exception e) {
+	                messageListener.messageReceived("Error: " + e.getMessage());
+	            } finally {
+	            	counter = 0;
+	               client.close();
+	               serverSocket.close();
+	               mOut.close();
+	               heartBeatThread.stop();
+	               serverSocket = null;
+	               client = null;
+	               mOut = null;
+	               messageListener.messageReceived("Connection Closed. Goodnight");
+	            }
+	 
+	        } catch (Exception e) {
+	           messageListener.messageReceived("Error: " + e.getMessage());
+	        }
         }
-       run();
     }
     
  
