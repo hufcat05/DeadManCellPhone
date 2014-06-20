@@ -8,7 +8,6 @@ INDEX VERSION 1.126+C:\Users\hufcat05\AppWorkspace\DeadManCellPhone\.metadata\.p
 728132027.index
 384216248.index
 1284074322.index
-823335130.index
 2706502329.index
 2104373710.index
 4018706093.index

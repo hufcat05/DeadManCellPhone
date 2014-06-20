@@ -25,7 +25,6 @@ public class TCPServer extends Thread {
     private boolean heartBeatReceived = true;
     static ServerBoard frame;
     int counter = 0;
-    int disconnectCounter = 0;
  
     public static void main(String[] args) {
  
@@ -153,7 +152,7 @@ public class TCPServer extends Thread {
 	                    			counter = 0;
 	                    		}
 	                    	}
-	                        messageListener.messageReceived("Phone " + disconnectCounter + ": " + message);
+	                        messageListener.messageReceived("Phone: " + message);
 	                    } 
 	                    
 	                    
@@ -178,7 +177,6 @@ public class TCPServer extends Thread {
 	               client = null;
 	               mOut = null;
 	               messageListener.messageReceived("Connection Closed. Goodnight");
-	               disconnectCounter++;
 	            }
 	 
 	        } catch (Exception e) {
