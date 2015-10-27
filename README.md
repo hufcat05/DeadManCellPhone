@@ -9,7 +9,7 @@ TCPServer and IPCServer compile into runnable jars
 
 Order of startup:
   1. TCPServer
-  2. Turn on phone app, wait for connection to occur
+  2. Turn on phone app (ServiceExample1), wait for connection to occur
   3. Whenever you want the phone to ring/stop ringing - run the IPCServer via the command
 
 
