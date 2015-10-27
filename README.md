@@ -17,4 +17,6 @@ Notes about the project: Some of the coding here may appear sloppy but in actual
 
 Also, right now the connection IP address is hardcoded into the android application.
 
+
+I know it's not well documented, maybe someday I'll get back around to making this more developer friendly.
 Questions about the project (email me): hufcat05@gmail.com
